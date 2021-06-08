@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trkj.javaxm1.mybatis.dao.WarehouseDao">
+
+    <resultMap type="com.trkj.javaxm1.mybatis.entity.Warehouse" id="WarehouseMap">
+        <result property="wid" column="wid" jdbcType="INTEGER"/>
+        <result property="wname" column="wname" jdbcType="VARCHAR"/>
+        <result property="charge" column="charge" jdbcType="VARCHAR"/>
+        <result property="lxphone" column="lxphone" jdbcType="VARCHAR"/>
+        <result property="waddress" column="waddress" jdbcType="VARCHAR"/>
+        <result property="ismoren" column="ismoren" jdbcType="INTEGER"/>
+        <result property="branchid" column="branchid" jdbcType="INTEGER"/>
+        <result property="cjdate" column="cjdate" jdbcType="TIMESTAMP"/>
+        <result property="beizhu" column="beizhu" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="queryBybranchid" resultMap="WarehouseMap">
+        select
+          wid, wname, charge, lxphone, waddress, ismoren, branchid, cjdate, beizhu
+        from projects.warehouse
+        where branchid = #{branchid}
+    </select>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="WarehouseMap">
+        select
+          wid, wname, charge, lxphone, waddress, ismoren, branchid, cjdate, beizhu
+        from projects.warehouse
+        where wid = #{wid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="WarehouseMap">
+        select
+          wid, wname, charge, lxphone, waddress, ismoren, branchid, cjdate, beizhu
+        from projects.warehouse
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="WarehouseMap">
+        select
+        wid, wname, charge, lxphone, waddress, ismoren, branchid, cjdate, beizhu
+        from projects.warehouse
+        <where>
+            <if test="wid != null">
+                and wid = #{wid}
+            </if>
+            <if test="wname != null and wname != ''">
+                and wname = #{wname}
+            </if>
+            <if test="charge != null and charge != ''">
+                and charge = #{charge}
+            </if>
+            <if test="lxphone != null and lxphone != ''">
+                and lxphone = #{lxphone}
+            </if>
+            <if test="waddress != null and waddress != ''">
+                and waddress = #{waddress}
+            </if>
+            <if test="ismoren != null">
+                and ismoren = #{ismoren}
+            </if>
+            <if test="branchid != null">
+                and branchid = #{branchid}
+            </if>
+            <if test="cjdate != null">
+                and cjdate = #{cjdate}
+            </if>
+            <if test="beizhu != null and beizhu != ''">
+                and beizhu = #{beizhu}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="wid" useGeneratedKeys="true">
+        insert into projects.warehouse(wname, charge, lxphone, waddress, ismoren, branchid, cjdate, beizhu)
+        values (#{wname}, #{charge}, #{lxphone}, #{waddress}, #{ismoren}, #{branchid}, #{cjdate}, #{beizhu})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="wid" useGeneratedKeys="true">
+        insert into projects.warehouse(wname, charge, lxphone, waddress, ismoren, branchid, cjdate, beizhu)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.wname}, #{entity.charge}, #{entity.lxphone}, #{entity.waddress}, #{entity.ismoren},
+            #{entity.branchid}, #{entity.cjdate}, #{entity.beizhu})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="wid" useGeneratedKeys="true">
+        insert into projects.warehouse(wname, charge, lxphone, waddress, ismoren, branchid, cjdate, beizhu)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.wname}, #{entity.charge}, #{entity.lxphone}, #{entity.waddress}, #{entity.ismoren},
+            #{entity.branchid}, #{entity.cjdate}, #{entity.beizhu})
+        </foreach>
+        on duplicate key update
+        wname = values(wname) , charge = values(charge) , lxphone = values(lxphone) , waddress = values(waddress) ,
+        ismoren = values(ismoren) , branchid = values(branchid) , cjdate = values(cjdate) , beizhu = values(beizhu)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update projects.warehouse
+        <set>
+            <if test="wname != null and wname != ''">
+                wname = #{wname},
+            </if>
+            <if test="charge != null and charge != ''">
+                charge = #{charge},
+            </if>
+            <if test="lxphone != null and lxphone != ''">
+                lxphone = #{lxphone},
+            </if>
+            <if test="waddress != null and waddress != ''">
+                waddress = #{waddress},
+            </if>
+            <if test="ismoren != null">
+                ismoren = #{ismoren},
+            </if>
+            <if test="branchid != null">
+                branchid = #{branchid},
+            </if>
+            <if test="cjdate != null">
+                cjdate = #{cjdate},
+            </if>
+            <if test="beizhu != null and beizhu != ''">
+                beizhu = #{beizhu},
+            </if>
+        </set>
+        where wid = #{wid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from projects.warehouse where wid = #{wid}
+    </delete>
+
+</mapper>
+

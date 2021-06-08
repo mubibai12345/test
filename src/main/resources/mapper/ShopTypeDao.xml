@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trkj.javaxm1.mybatis.dao.ShoptypeDao">
+
+    <resultMap type="com.trkj.javaxm1.mybatis.entity.ShopType" id="ShopTypeMap">
+        <result property="spTypeId" column="sp_type_id" jdbcType="INTEGER"/>
+        <result property="spTypeName" column="sp_type_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ShopTypeMap">
+        select
+          sp_type_id, sp_type_name
+        from projects.shop_type
+        where sp_type_id = #{spTypeId}
+    </select>
+    <select id="queryTypeAll" resultMap="ShopTypeMap">
+        select
+         sp_type_id, sp_type_name
+        from projects.shop_type
+    </select>
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ShopTypeMap">
+        select
+          sp_type_id, sp_type_name
+        from projects.shop_type
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ShopTypeMap">
+        select
+        sp_type_id, sp_type_name
+        from projects.shop_type
+        <where>
+            <if test="spTypeId != null">
+                and sp_type_id = #{spTypeId}
+            </if>
+            <if test="spTypeName != null and spTypeName != ''">
+                and sp_type_name = #{spTypeName}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="spTypeId" useGeneratedKeys="true">
+        insert into projects.shop_type(sp_type_name)
+        values (#{spTypeName})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="spTypeId" useGeneratedKeys="true">
+        insert into projects.shop_type(sp_type_name)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.spTypeName})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="spTypeId" useGeneratedKeys="true">
+        insert into projects.shop_type(sp_type_name)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.spTypeName})
+        </foreach>
+        on duplicate key update
+        sp_type_name = values(sp_type_name)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update projects.shop_type
+        <set>
+            <if test="spTypeName != null and spTypeName != ''">
+                sp_type_name = #{spTypeName},
+            </if>
+        </set>
+        where sp_type_id = #{spTypeId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from projects.shop_type where sp_type_id = #{spTypeId}
+    </delete>
+
+</mapper>
+

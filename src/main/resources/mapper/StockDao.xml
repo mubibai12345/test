@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trkj.javaxm1.mybatis.dao.StockDao">
+
+    <resultMap type="com.trkj.javaxm1.mybatis.entity.Stock" id="StockMap">
+        <result property="skShopid" column="sk_shopid" jdbcType="INTEGER"/>
+        <result property="spStorefrontId" column="sp_storefront_id" jdbcType="INTEGER"/>
+        <result property="spWarehouseId" column="sp_Warehouse_id" jdbcType="INTEGER"/>
+        <result property="skNumber" column="sk_number" jdbcType="INTEGER"/>
+        <result property="spNumber" column="sp_number" jdbcType="INTEGER"/>
+        <result property="skLossNumber" column="sk_loss_number" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap type="com.trkj.javaxm1.vo.StockVo" id="StockMapVo">
+        <result property="spShopId" column="sp_shopid" jdbcType="INTEGER"/>
+        <result property="spName" column="sp_name" jdbcType="VARCHAR"/>
+        <result property="spCompany" column="sp_Company" jdbcType="VARCHAR"/>
+        <result property="spSpecifications" column="sp_Specifications" jdbcType="VARCHAR"/>
+        <result property="spColor" column="sp_color" jdbcType="VARCHAR"/>
+        <result property="spJprice" column="sp_jprice" jdbcType="NUMERIC"/>
+        <result property="spManufacturer" column="sp_Manufacturer" jdbcType="VARCHAR"/>
+        <result property="spBeizhu" column="sp_beizhu" jdbcType="VARCHAR"/>
+        <result property="number" column="sk_number" javaType="INTEGER"/>
+        <result property="spBarCode" column="sp_bar_code" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 查询所有商品 -->
+    <select id="queryshopanstock" resultMap="StockMapVo">
+        SELECT s.`sp_shopid`,s.`sp_name`,s.`sp_Company`,s.`sp_Specifications`,s.`sp_color`,s.`sp_jprice`,sk.`sk_number`,s.`sp_Manufacturer`,s.`sp_beizhu`,s.`sp_bar_code`
+        FROM shop s
+        LEFT JOIN shop_type tp ON s.sp_type_id = tp.sp_type_id
+        LEFT JOIN stock sk ON s.sp_shopid = sk.sk_shopid
+        <where>
+            <if test="value != 0">
+                tp.sp_type_id = #{value}
+            </if>
+        </where>
+    </select>
+    <select id="findallbytypeandlike" resultMap="StockMapVo">
+        SELECT s.`sp_shopid`,s.`sp_name`,s.`sp_Company`,s.`sp_Specifications`,s.`sp_color`,s.`sp_jprice`,sk.`sk_number`,s.`sp_Manufacturer`,s.`sp_beizhu`,s.`sp_bar_code`
+        FROM shop s
+        LEFT JOIN shop_type tp ON s.sp_type_id = tp.sp_type_id
+        LEFT JOIN stock sk ON s.sp_shopid = sk.sk_shopid
+        <where>
+            <if test="nameandid != null and nameandid != ''">
+                and s.sp_shopid like concat('%',#{nameandid},'%')
+                or s.sp_name like concat('%',#{nameandid},'%')
+            </if>
+        </where>
+    </select>
+    <!--    &lt;!&ndash;查询单个&ndash;&gt;-->
+<!--    <select id="queryById" resultMap="StockMap">-->
+<!--        select-->
+<!--          sk_shopid, sp_storefront_id, sp_Warehouse_id, sk_number, sp_number, sk_loss_number-->
+<!--        from projects.stock-->
+<!--        where  = #{}-->
+<!--    </select>-->
+
+<!--    &lt;!&ndash;查询指定行数据&ndash;&gt;-->
+<!--    <select id="queryAllByLimit" resultMap="StockMap">-->
+<!--        select-->
+<!--          sk_shopid, sp_storefront_id, sp_Warehouse_id, sk_number, sp_number, sk_loss_number-->
+<!--        from projects.stock-->
+<!--        limit #{offset}, #{limit}-->
+<!--    </select>-->
+
+<!--    &lt;!&ndash;通过实体作为筛选条件查询&ndash;&gt;-->
+<!--    <select id="queryAll" resultMap="StockMap">-->
+<!--        select-->
+<!--        sk_shopid, sp_storefront_id, sp_Warehouse_id, sk_number, sp_number, sk_loss_number-->
+<!--        from projects.stock-->
+<!--        <where>-->
+<!--            <if test="skShopid != null">-->
+<!--                and sk_shopid = #{skShopid}-->
+<!--            </if>-->
+<!--            <if test="spStorefrontId != null">-->
+<!--                and sp_storefront_id = #{spStorefrontId}-->
+<!--            </if>-->
+<!--            <if test="spWarehouseId != null">-->
+<!--                and sp_Warehouse_id = #{spWarehouseId}-->
+<!--            </if>-->
+<!--            <if test="skNumber != null">-->
+<!--                and sk_number = #{skNumber}-->
+<!--            </if>-->
+<!--            <if test="spNumber != null">-->
+<!--                and sp_number = #{spNumber}-->
+<!--            </if>-->
+<!--            <if test="skLossNumber != null">-->
+<!--                and sk_loss_number = #{skLossNumber}-->
+<!--            </if>-->
+<!--        </where>-->
+<!--    </select>-->
+
+<!--    &lt;!&ndash;新增所有列&ndash;&gt;-->
+<!--    <insert id="insert" keyProperty="" useGeneratedKeys="true">-->
+<!--        insert into projects.stock(sk_shopid, sp_storefront_id, sp_Warehouse_id, sk_number, sp_number, sk_loss_number)-->
+<!--        values (#{skShopid}, #{spStorefrontId}, #{spWarehouseId}, #{skNumber}, #{spNumber}, #{skLossNumber})-->
+<!--    </insert>-->
+
+<!--    <insert id="insertBatch" keyProperty="" useGeneratedKeys="true">-->
+<!--        insert into projects.stock(sk_shopid, sp_storefront_id, sp_Warehouse_id, sk_number, sp_number, sk_loss_number)-->
+<!--        values-->
+<!--        <foreach collection="entities" item="entity" separator=",">-->
+<!--            (#{entity.skShopid}, #{entity.spStorefrontId}, #{entity.spWarehouseId}, #{entity.skNumber},-->
+<!--            #{entity.spNumber}, #{entity.skLossNumber})-->
+<!--        </foreach>-->
+<!--    </insert>-->
+
+<!--    <insert id="insertOrUpdateBatch" keyProperty="" useGeneratedKeys="true">-->
+<!--        insert into projects.stock(sk_shopid, sp_storefront_id, sp_Warehouse_id, sk_number, sp_number, sk_loss_number)-->
+<!--        values-->
+<!--        <foreach collection="entities" item="entity" separator=",">-->
+<!--            (#{entity.skShopid}, #{entity.spStorefrontId}, #{entity.spWarehouseId}, #{entity.skNumber},-->
+<!--            #{entity.spNumber}, #{entity.skLossNumber})-->
+<!--        </foreach>-->
+<!--        on duplicate key update-->
+<!--        sk_shopid = values(sk_shopid) , sp_storefront_id = values(sp_storefront_id) , sp_Warehouse_id =-->
+<!--        values(sp_Warehouse_id) , sk_number = values(sk_number) , sp_number = values(sp_number) , sk_loss_number =-->
+<!--        values(sk_loss_number)-->
+<!--    </insert>-->
+
+<!--    &lt;!&ndash;通过主键修改数据&ndash;&gt;-->
+<!--    <update id="update">-->
+<!--        update projects.stock-->
+<!--        <set>-->
+<!--            <if test="skShopid != null">-->
+<!--                sk_shopid = #{skShopid},-->
+<!--            </if>-->
+<!--            <if test="spStorefrontId != null">-->
+<!--                sp_storefront_id = #{spStorefrontId},-->
+<!--            </if>-->
+<!--            <if test="spWarehouseId != null">-->
+<!--                sp_Warehouse_id = #{spWarehouseId},-->
+<!--            </if>-->
+<!--            <if test="skNumber != null">-->
+<!--                sk_number = #{skNumber},-->
+<!--            </if>-->
+<!--            <if test="spNumber != null">-->
+<!--                sp_number = #{spNumber},-->
+<!--            </if>-->
+<!--            <if test="skLossNumber != null">-->
+<!--                sk_loss_number = #{skLossNumber},-->
+<!--            </if>-->
+<!--        </set>-->
+<!--        where = #{}-->
+<!--    </update>-->
+
+<!--    &lt;!&ndash;通过主键删除&ndash;&gt;-->
+<!--    <delete id="deleteById">-->
+<!--        delete from projects.stock where  = #{}-->
+<!--    </delete>-->
+
+</mapper>
+

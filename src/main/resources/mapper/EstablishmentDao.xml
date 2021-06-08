@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trkj.javaxm1.mybatis.dao.EstablishmentDao">
+
+    <resultMap type="com.trkj.javaxm1.mybatis.entity.Establishment" id="EstablishmentMap">
+        <result property="xid" column="xid" jdbcType="INTEGER"/>
+        <result property="bank" column="Bank" jdbcType="VARCHAR"/>
+        <result property="opening" column="Opening" jdbcType="NUMERIC"/>
+        <result property="enable" column="Enable" jdbcType="INTEGER"/>
+        <result property="sort" column="sort" jdbcType="VARCHAR"/>
+        <result property="creationdate" column="Creationdate" jdbcType="TIMESTAMP"/>
+        <result property="remarks" column="remarks" jdbcType="VARCHAR"/>
+        <result property="branchid" column="branchid" jdbcType="INTEGER"/>
+
+    </resultMap>
+
+    <select id="selectbybranchid" resultMap="EstablishmentMap">
+        select
+           xid, Bank, Opening, Enable, sort, Creationdate, remarks, branchid
+        from projects.establishment
+        where branchid = #{branchid}
+    </select>
+    <!--查询单个-->
+    <select id="queryById" resultMap="EstablishmentMap">
+        select
+          xid, Bank, Opening, Enable, sort, Creationdate, remarks, branchid
+        from projects.establishment
+        where xid = #{xid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="EstablishmentMap">
+        select
+          xid, Bank, Opening, Enable, sort, Creationdate, remarks, branchid
+        from projects.establishment
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="EstablishmentMap">
+        select
+        xid, Bank, Opening, Enable, sort, Creationdate, remarks, branchid
+        from projects.establishment
+        <where>
+            <if test="xid != null">
+                and xid = #{xid}
+            </if>
+            <if test="bank != null and bank != ''">
+                and Bank = #{bank}
+            </if>
+            <if test="opening != null">
+                and Opening = #{opening}
+            </if>
+            <if test="enable != null">
+                and Enable = #{enable}
+            </if>
+            <if test="sort != null and sort != ''">
+                and sort = #{sort}
+            </if>
+            <if test="creationdate != null">
+                and Creationdate = #{creationdate}
+            </if>
+            <if test="remarks != null and remarks != ''">
+                and remarks = #{remarks}
+            </if>
+            <if test="branchid != null">
+                and branchid = #{branchid}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="xid" useGeneratedKeys="true">
+        insert into projects.establishment(Bank, Opening, Enable, sort, Creationdate, remarks, branchid)
+        values (#{bank}, #{opening}, #{enable}, #{sort}, #{creationdate}, #{remarks}, #{branchid}
+    </insert>
+
+    <insert id="insertBatch" keyProperty="xid" useGeneratedKeys="true">
+        insert into projects.establishment(Bank, Opening, Enable, sort, Creationdate, remarks, branchid)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.bank}, #{entity.opening}, #{entity.enable}, #{entity.sort}, #{entity.creationdate},
+            #{entity.remarks}, #{entity.branchid}
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="xid" useGeneratedKeys="true">
+        insert into projects.establishment(Bank, Opening, Enable, sort, Creationdate, remarks, branchid)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.bank}, #{entity.opening}, #{entity.enable}, #{entity.sort}, #{entity.creationdate},
+            #{entity.remarks}, #{entity.branchid}
+        </foreach>
+        on duplicate key update
+        Bank = values(Bank) , Opening = values(Opening) , Enable = values(Enable) , sort = values(sort) , Creationdate =
+        values(Creationdate) , remarks = values(remarks) , branchid = values(branchid)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update projects.establishment
+        <set>
+            <if test="bank != null and bank != ''">
+                Bank = #{bank},
+            </if>
+            <if test="opening != null">
+                Opening = #{opening},
+            </if>
+            <if test="enable != null">
+                Enable = #{enable},
+            </if>
+            <if test="sort != null and sort != ''">
+                sort = #{sort},
+            </if>
+            <if test="creationdate != null">
+                Creationdate = #{creationdate},
+            </if>
+            <if test="remarks != null and remarks != ''">
+                remarks = #{remarks},
+            </if>
+            <if test="branchid != null">
+                branchid = #{branchid},
+            </if>
+        </set>
+        where xid = #{xid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from projects.establishment where xid = #{xid}
+    </delete>
+
+</mapper>
+

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trkj.javaxm1.mybatis.dao.DocumentListDao">
+
+    <resultMap type="com.trkj.javaxm1.mybatis.entity.DocumentList" id="DocumentListMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="dlNumber" column="dl_number" jdbcType="VARCHAR"/>
+        <result property="dlDate" column="dl_date" jdbcType="TIMESTAMP"/>
+        <result property="supplierid" column="supplierid" jdbcType="INTEGER"/>
+        <result property="customerid" column="customerid" jdbcType="INTEGER"/>
+        <result property="wid" column="wid" jdbcType="INTEGER"/>
+        <result property="dlYfje" column="dl_yfje" jdbcType="NUMERIC"/>
+        <result property="dlSfje" column="dl_sfje" jdbcType="NUMERIC"/>
+        <result property="dlQkje" column="dl_qkje" jdbcType="NUMERIC"/>
+        <result property="dlYhje" column="dl_yhje" jdbcType="NUMERIC"/>
+        <result property="agentId" column="agent_id" jdbcType="INTEGER"/>
+        <result property="admin" column="admin" jdbcType="INTEGER"/>
+        <result property="dlTypeId" column="dl_type_id" jdbcType="INTEGER"/>
+        <result property="dlStatieId" column="dl_statie_id" jdbcType="INTEGER"/>
+        <result property="dlBeizhu" column="dl_beizhu" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap type="com.trkj.javaxm1.vo.DocumentlistVo" id="DocumentListVOMap">
+        <result property="dlNumber" column="dl_number" jdbcType="VARCHAR"/>
+        <result property="dlDate" column="dl_date" jdbcType="TIMESTAMP"/>
+        <result property="suppliername" column="suppliername" jdbcType="VARCHAR"/>
+        <result property="contacts" column="c_contacts" jdbcType="VARCHAR"/>
+        <result property="wname" column="wname" jdbcType="VARCHAR"/>
+        <result property="dlyfje" column="dl_yfje" jdbcType="NUMERIC"/>
+        <result property="dlsfje" column="dl_sfje" jdbcType="NUMERIC"/>
+        <result property="dlqkje" column="dl_qkje" jdbcType="NUMERIC"/>
+        <result property="dlyhje" column="dl_yhje" jdbcType="NUMERIC"/>
+        <result property="agentname" column="agent_name" jdbcType="VARCHAR"/>
+        <result property="username" column="user_name" jdbcType="VARCHAR"/>
+        <result property="dltypename" column="dl_type_name" jdbcType="VARCHAR"/>
+        <result property="dlstatiename" column="dl_statie_name" jdbcType="VARCHAR"/>
+        <result property="dlbeizhu" column="dl_beizhu" jdbcType="VARCHAR"/>
+        <result property="branchname" column="branchname" jdbcType="VARCHAR"/>
+        <result property="branchid" column="branchid" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <select id="findallbyfdandkhanduserandgjz" resultMap="DocumentListVOMap">
+        SELECT dm.branchid,dl.dl_number,dm.branchname,dl.dl_date,c.c_contacts,ws.wname,dl.dl_yfje,dl.dl_sfje,dl.dl_qkje,dl.dl_yhje,ag.agent_name,su.user_name,dls.dl_statie_name,dlt.dl_type_name,dl.dl_beizhu
+        FROM document_list dl
+        LEFT JOIN customer c ON dl.customerid = c.c_id
+        LEFT JOIN warehouse ws ON dl.wid = ws.wid
+        LEFT JOIN agent ag ON dl.agent_id = ag.agent_id
+        LEFT JOIN sys_user su ON dl.admin = su.user_id
+        LEFT JOIN document_list_static dls  ON dl.dl_statie_id = dls.dl_statie_id
+        LEFT JOIN document_list_type dlt ON dl.dl_type_id = dlt.dl_type_id
+        LEFT JOIN branch dm ON dm.branchid = c.branchid
+        <where>
+            dls.dl_statie_name = '销售未审核' AND dlt.dl_type_name = '销售出货'
+            <if test="qishitime != null and qishitime != '' and zuihotime != null and zuihotime != ''">
+                and dl.dl_date between #{qishitime} and #{zuihotime}
+            </if>
+            <if test="branchid != 0 and branchid != null">
+                and c.branchid = #{branchid}
+            </if>
+            <if test="customerid != 0 and customerid != null">
+                and c_id = #{customerid}
+            </if>
+            <if test="userid != 0 and userid != null">
+                and su.user_id = #{userid}
+            </if>
+            <if test="gjz != null and gjz != ''">
+                and dl.dl_number like concat('%',#{gjz},'%')
+                or c.c_contacts like concat('%',#{gjz},'%')
+            </if>
+        </where>
+    </select>
+    <!--查询单个-->
+    <select id="queryById" resultMap="DocumentListMap">
+        select
+          id, dl_number, dl_date, supplierid, wid, dl_yfje, dl_sfje, dl_qkje, dl_yhje, agent_id, admin, dl_type_id, dl_statie_id, dl_beizhu
+        from projects.document_list
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="DocumentListMap">
+        select
+          id, dl_number, dl_date, supplierid, wid, dl_yfje, dl_sfje, dl_qkje, dl_yhje, agent_id, admin, dl_type_id, dl_statie_id, dl_beizhu
+        from projects.document_list
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="DocumentListMap">
+        select
+        id, dl_number, dl_date, supplierid, wid, dl_yfje, dl_sfje, dl_qkje, dl_yhje, agent_id, admin, dl_type_id,
+        dl_statie_id, dl_beizhu
+        from projects.document_list
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="dlNumber != null and dlNumber != ''">
+                and dl_number = #{dlNumber}
+            </if>
+            <if test="dlDate != null">
+                and dl_date = #{dlDate}
+            </if>
+            <if test="supplierid != null">
+                and supplierid = #{supplierid}
+            </if>
+            <if test="wid != null">
+                and wid = #{wid}
+            </if>
+            <if test="dlYfje != null">
+                and dl_yfje = #{dlYfje}
+            </if>
+            <if test="dlSfje != null">
+                and dl_sfje = #{dlSfje}
+            </if>
+            <if test="dlQkje != null">
+                and dl_qkje = #{dlQkje}
+            </if>
+            <if test="dlYhje != null">
+                and dl_yhje = #{dlYhje}
+            </if>
+            <if test="agentId != null">
+                and agent_id = #{agentId}
+            </if>
+            <if test="admin != null">
+                and admin = #{admin}
+            </if>
+            <if test="dlTypeId != null">
+                and dl_type_id = #{dlTypeId}
+            </if>
+            <if test="dlStatieId != null">
+                and dl_statie_id = #{dlStatieId}
+            </if>
+            <if test="dlBeizhu != null and dlBeizhu != ''">
+                and dl_beizhu = #{dlBeizhu}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into projects.document_list(dl_number, dl_date, supplierid,customerid, wid, dl_yfje, dl_sfje, dl_qkje, dl_yhje, agent_id, admin, dl_type_id, dl_statie_id, dl_beizhu)
+        values (#{dlNumber}, #{dlDate}, #{supplierid},#{customerid}, #{wid}, #{dlYfje}, #{dlSfje}, #{dlQkje}, #{dlYhje}, #{agentId}, #{admin}, #{dlTypeId}, #{dlStatieId}, #{dlBeizhu})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into projects.document_list(dl_number, dl_date, supplierid, wid, dl_yfje, dl_sfje, dl_qkje, dl_yhje,
+        agent_id, admin, dl_type_id, dl_statie_id, dl_beizhu)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.dlNumber}, #{entity.dlDate}, #{entity.supplierid}, #{entity.wid}, #{entity.dlYfje},
+            #{entity.dlSfje}, #{entity.dlQkje}, #{entity.dlYhje}, #{entity.agentId}, #{entity.admin},
+            #{entity.dlTypeId}, #{entity.dlStatieId}, #{entity.dlBeizhu})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into projects.document_list(dl_number, dl_date, supplierid, wid, dl_yfje, dl_sfje, dl_qkje, dl_yhje,
+        agent_id, admin, dl_type_id, dl_statie_id, dl_beizhu)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.dlNumber}, #{entity.dlDate}, #{entity.supplierid}, #{entity.wid}, #{entity.dlYfje},
+            #{entity.dlSfje}, #{entity.dlQkje}, #{entity.dlYhje}, #{entity.agentId}, #{entity.admin},
+            #{entity.dlTypeId}, #{entity.dlStatieId}, #{entity.dlBeizhu})
+        </foreach>
+        on duplicate key update
+        dl_number = values(dl_number) , dl_date = values(dl_date) , supplierid = values(supplierid) , wid = values(wid)
+        , dl_yfje = values(dl_yfje) , dl_sfje = values(dl_sfje) , dl_qkje = values(dl_qkje) , dl_yhje = values(dl_yhje)
+        , agent_id = values(agent_id) , admin = values(admin) , dl_type_id = values(dl_type_id) , dl_statie_id =
+        values(dl_statie_id) , dl_beizhu = values(dl_beizhu)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update projects.document_list
+        <set>
+            <if test="dlNumber != null and dlNumber != ''">
+                dl_number = #{dlNumber},
+            </if>
+            <if test="dlDate != null">
+                dl_date = #{dlDate},
+            </if>
+            <if test="supplierid != null">
+                supplierid = #{supplierid},
+            </if>
+            <if test="wid != null">
+                wid = #{wid},
+            </if>
+            <if test="dlYfje != null">
+                dl_yfje = #{dlYfje},
+            </if>
+            <if test="dlSfje != null">
+                dl_sfje = #{dlSfje},
+            </if>
+            <if test="dlQkje != null">
+                dl_qkje = #{dlQkje},
+            </if>
+            <if test="dlYhje != null">
+                dl_yhje = #{dlYhje},
+            </if>
+            <if test="agentId != null">
+                agent_id = #{agentId},
+            </if>
+            <if test="admin != null">
+                admin = #{admin},
+            </if>
+            <if test="dlTypeId != null">
+                dl_type_id = #{dlTypeId},
+            </if>
+            <if test="dlStatieId != null">
+                dl_statie_id = #{dlStatieId},
+            </if>
+            <if test="dlBeizhu != null and dlBeizhu != ''">
+                dl_beizhu = #{dlBeizhu},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from projects.document_list where id = #{id}
+    </delete>
+
+</mapper>
+
